@@ -1,10 +1,11 @@
 import express from 'express'
 import { usersRouter } from './routes/users.js'
 import path from 'path'
-
+import cookieParser from 'cookie-parser'
 const app = express()
 
 app.use(express.json())
+app.use(cookieParser())
 app.set('views', path.join(process.cwd(), 'server', 'views'))
 app.set('view engine', 'ejs')
 app.disable('x-powered-by')
