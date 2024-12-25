@@ -1,6 +1,7 @@
 import { validateUser, validateUserLogin } from '../schemas/userSh.js'
 import { UsersModel } from '../model/usersMySQL.js'
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 
 export class UsersController {
   static async register (req, res) {
@@ -30,7 +31,16 @@ export class UsersController {
     if (!match) {
       return res.status(401).json({ error: 'Invalid password' })
     }
-    res.status(200).json(user.id)
+    const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' })
+    res.status(200).cookie('access_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 100 * 60 * 60
+    }).json({
+      id: user.id,
+      username: user.username
+    })
   }
 
   static async logout (req, res) {

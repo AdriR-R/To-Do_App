@@ -1,9 +1,16 @@
 import express from 'express'
 import { usersRouter } from './routes/users.js'
+import cookieParser from 'cookie-parser'
 const app = express()
 app.use(express.json())
 app.disable('x-powered-by')
-
+app.use(cookieParser())
+app.get('/', (req, res) => {
+  res.redirect('/prueba')
+})
+app.get('/prueba', (req, res) => {
+  res.send('Hola mundo')
+})
 app.use('/users', usersRouter)
 // app.use('/tasks', tasksRouter)
 
