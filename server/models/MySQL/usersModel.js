@@ -14,7 +14,7 @@ export class UsersModel {
       connection.release()
       return { result }
     } catch (err) {
-      return { errno: err.errno, message: err.message }
+      return { error: err.message }
     }
   }
 

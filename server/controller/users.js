@@ -1,5 +1,5 @@
 import { validateUser, validateUserLogin } from '../schemas/userSh.js'
-import { UsersModel } from '../model/usersMySQL.js'
+import { UsersModel } from '../models/MySQL/usersModel.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
@@ -12,7 +12,7 @@ export class UsersController {
     const hashedPassword = await bcrypt.hash(validUser.data.password, parseInt(process.env.SALT_ROUNDS))
     validUser.data.password = hashedPassword
     const results = await UsersModel.insertUser(Object.values(validUser.data))
-    if (results.errno) {
+    if (results.error) {
       return res.status(409).json(results)
     }
     res.status(201).json(results)
