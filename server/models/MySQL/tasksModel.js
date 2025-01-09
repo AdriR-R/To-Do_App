@@ -1,12 +1,7 @@
-import mysql from 'mysql2/promise'
-const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
-})
+import { pool, checkConnection } from '../../utils/dbUtils.js'
 export class TasksModel {
   static async getAll ({ status }) {
+    await checkConnection()
     const query = 'SELECT title, description, due_date, status, created_at FROM tasks WHERE status = ?'
     try {
       const connection = await pool.getConnection()
@@ -24,8 +19,11 @@ export class TasksModel {
     }
   }
 
-  static async create (values) {
-    const query = 'INSERT INTO tasks(user_id, title, description, due_date) VALUES(UUID_TO_BIN(?), ?, ?, ?)'
+  static async create (fields, values) {
+    await checkConnection()
+    const query = `
+  INSERT INTO tasks(${fields.join(', ')}) VALUES(${fields.map(field => (field === 'user_id' ? 'UUID_TO_BIN(?)' : '?')).join(', ')})`
+    console.log(query)
     try {
       const connection = await pool.getConnection()
       const [result] = await connection.execute(query, values)
@@ -37,10 +35,14 @@ export class TasksModel {
   }
 
   static async delete (id) {
+    await checkConnection()
     const query = 'DELETE FROM tasks WHERE id = UUID_TO_BIN(?)'
     try {
       const connection = await pool.getConnection()
       const [result] = await connection.execute(query, [id])
+      if (result.affectedRows === 0) {
+        throw new Error('id not found')
+      }
       connection.release()
       return { result }
     } catch (err) {
