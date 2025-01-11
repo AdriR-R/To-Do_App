@@ -126,7 +126,7 @@
                     throw new Error(`Error: ${response.statusText}`);
                 }
                 console.log(await response.json());
-                location.href = 'http://localhost:3000/protected';
+                location.href = 'http://localhost:3000/home/protected';
             } catch (error) {
                 console.error(error.message);
             }
