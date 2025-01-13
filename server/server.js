@@ -2,6 +2,7 @@ import express from 'express'
 import { usersRouter } from './routes/users.js'
 import { templatesRouter } from './routes/templates.js'
 import path from 'path'
+import { tasksRouter } from './routes/tasks.js'
 import cookieParser from 'cookie-parser'
 const app = express()
 
@@ -16,8 +17,8 @@ app.get('/', (req, res) => {
 })
 
 app.use('/users', usersRouter)
-// app.use('/tasks', tasksRouter)
 app.use('/home', templatesRouter)
+app.use('/tasks', tasksRouter)
 
 const PORT = process.env.PORT ?? 3000
 app.listen(PORT, () => {
